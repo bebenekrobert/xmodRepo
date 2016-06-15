@@ -109,7 +109,7 @@ void XModemSender::readData(){
     QByteArray data = port->readAll();
     qDebug() << "read " << data.length() << " bytes";
 
-    if(data[0] == XModem::NAK){//zaczynamy wysylanie lub wysylamy ponownie ostatnia czesc pliku
+    if(data[0] == XModem::NAK || XModem::C){//zaczynamy wysylanie lub wysylamy ponownie ostatnia czesc pliku
         qDebug() << "NAK received - start sending or resend last part";
         file->seek(file->pos()-bytesRead);//cofamy sie o ostatnio odczytana ilosc bajtow, w przypadku rozpoczescia wysylania - seek(0)
         QTimer::singleShot(100, this, SLOT(send()));

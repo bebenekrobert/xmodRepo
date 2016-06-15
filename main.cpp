@@ -7,8 +7,8 @@
 int main(int argc, char *argv[]){
     QCoreApplication a(argc, argv);
 
-    if(argc != 4){
-        qDebug() << "incorrect arguments, usage:\n xmode <mode:R|S> <COM#> <FILENAME>";
+    if(argc != 5){
+        qDebug() << "incorrect arguments, usage:\n xmode <mode:R|S> <COM#> <FILENAME> <initMode:C|NAK>";
         return 0;
     }
     QObject* xModem = NULL;
