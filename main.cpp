@@ -13,9 +13,9 @@ int main(int argc, char *argv[]){
     }
     QObject* xModem = NULL;
     if(strcmp(argv[1], "R")==0) {//receiver
-        xModem = new XModemReceiver(argv[2], argv[3]);
+        xModem = new XModemReceiver(argv[2], argv[3], argv[4]);
     } else if(strcmp(argv[1],"S")==0) {//sender
-        xModem = new XModemSender(argv[2], argv[3]);
+        xModem = new XModemSender(argv[2], argv[3], argv[4]);
     } else {
         qDebug() << "wrong mode (shoudl be R|S)";
         return 0;

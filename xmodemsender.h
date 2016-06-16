@@ -19,7 +19,7 @@ public slots:
     void sendEOT();
 
 public:
-    XModemSender(QString portName, QString fileName);
+    XModemSender(QString portName, QString fileName, QString initCStr);
     ~XModemSender();
 
 private:
@@ -28,6 +28,7 @@ private:
     QFile* file;
     unsigned char packetNr;
     int bytesRead;
+    bool initC;
 };
 
 #endif // XMODEMSENDER_H

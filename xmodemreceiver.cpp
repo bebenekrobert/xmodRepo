@@ -15,10 +15,16 @@
  * @param portName - port name
  * @param fileName - file name
  */
-XModemReceiver::XModemReceiver(QString portName, QString fileName) :
+XModemReceiver::XModemReceiver(QString portName, QString fileName, QString initCStr) :
                                                     fileName(fileName),
                                                     receiving(false) {
     qDebug() << Q_FUNC_INFO;
+
+    if(QString::compare(initCStr, "C") == 0 ) {
+        this->initC = true;
+    } else {
+        this->initC = false;
+    }
 
     //stworzenie s konfigurowanie portu szeregowego
     port = new QSerialPort(this);

@@ -21,7 +21,7 @@ public slots:
     void sendNAK();
 
 public:
-    XModemReceiver(QString portName, QString fileName);
+    XModemReceiver(QString portName, QString fileName, QString initCStr);
     ~XModemReceiver();
 
 private:
@@ -30,6 +30,7 @@ private:
     QSerialPort* port;
     bool receiving;
     QByteArray receivedData;
+    bool initC;
 };
 
 #endif // XMODEMRECIEVER_H

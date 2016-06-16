@@ -11,11 +11,18 @@
  * @param com - port name
  * @param fileName - file name
  */
-XModemSender::XModemSender(QString portName, QString fileName) :
+XModemSender::XModemSender(QString portName, QString fileName, QString initCStr) :
                                                     fileName(fileName),
                                                     packetNr(0),
                                                     bytesRead(0) {
     qDebug() << Q_FUNC_INFO;
+
+    if(QString::compare(initCStr, "C") == 0 ) {
+        this->initC = true;
+    } else {
+        this->initC = false;
+    }
+
     //stworzenie s konfigurowanie portu szeregowego
     port = new QSerialPort(this);
     port->setPortName(portName);
