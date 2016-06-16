@@ -79,8 +79,13 @@ void XModemReceiver::initReceive(){
     if(!receiving && i < 6){
         i++;
         QByteArray toSend;
-        toSend.append(XModem::NAK);
-        qDebug() << "Sending NAK: " << i;
+        if(initC){
+            toSend.append(XModem::C);
+            qDebug() << "Sending C: " << i;
+        } else {
+            toSend.append(XModem::NAK);
+            qDebug() << "Sending NAK: " << i;
+        }
         port->write(toSend);
         port->flush();
         QTimer::singleShot(10000,this,SLOT(initReceive()));//po 10s wywołaj initReceive ponownie
