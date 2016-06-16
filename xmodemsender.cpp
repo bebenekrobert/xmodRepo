@@ -11,17 +11,11 @@
  * @param com - port name
  * @param fileName - file name
  */
-XModemSender::XModemSender(QString portName, QString fileName, QString initCStr) :
+XModemSender::XModemSender(QString portName, QString fileName) :
                                                     fileName(fileName),
                                                     packetNr(0),
                                                     bytesRead(0) {
     qDebug() << Q_FUNC_INFO;
-
-    if(QString::compare(initCStr, "C") == 0 ) {
-        this->initC = true;
-    } else {
-        this->initC = false;
-    }
 
     //stworzenie s konfigurowanie portu szeregowego
     port = new QSerialPort(this);
@@ -115,6 +109,12 @@ void XModemSender::readData(){
     //odczytujemt wszystko z portu
     QByteArray data = port->readAll();
     qDebug() << "read " << data.length() << " bytes";
+
+    //detect way of connection initiation only once, NAK inititation is default
+    if(data[0] == XModem::C){
+        initC = true;
+        qDebug() << "initiation was made by: C" << endl;
+    }
 
     if(data[0] == XModem::NAK || data[0] == XModem::C){//zaczynamy wysylanie lub wysylamy ponownie ostatnia czesc pliku
         qDebug() << "Init byte received - start sending or resend last part";
