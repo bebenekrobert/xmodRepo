@@ -95,11 +95,13 @@ void XModemSender::send(){
         //qDebug() << "crc: " << crc << " parts: " << (unsigned char)toSend[toSend.length()-2] << " " << (unsigned char)toSend[toSend.length()-1];
     } else {
         //wyslanie naglowka z danymi i algSum
-        quint8 algSum = 0;
+        char algSum = 0;
+        algSum += fileData[0];
 //        for(int i = 0; i < 128; i++){
 //            algSum += fileData[i];
 //        }
         toSend.append((char)algSum);
+        qDebug() << Q_FUNC_INFO << "algSum is: " << algSum;
     }
 
     port->write(toSend);
