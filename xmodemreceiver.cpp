@@ -136,6 +136,28 @@ void XModemReceiver::readData(){
             }
         } else {
             //odczyt algSum
+            quint8 receivedAlgSum = (unsigned char)receivedData[receivedData.length()-1];
+
+            //odczyt file data
+            QByteArray fileData =receivedData.mid(3,receivedData.length()-4);
+
+            //liczymy algSum odebranych danych
+            quint8 algSum = 0;
+//            for(int i = 0; i < 128; i++){
+//                algSum += fileData[i];
+//            }
+
+            qDebug() << "receivedAlgSum: " << receivedAlgSum;
+            qDebug() << "        algSum: " << algSum;
+
+            if( complement == 255 - packetNr && algSum == receivedAlgSum ){//jest ok
+                qDebug() << "complement/packetNr and crc - OK";
+                file->write(fileData);
+                QTimer::singleShot(100,this, SLOT(sendACK()));//wysyalnie podczas odbierania powoduje problemy - wysyłamy po 100ms
+            } else { //bład transmisji
+                qDebug() << "transfer error - request resend alt part";
+                QTimer::singleShot(100,this, SLOT(sendNAK()));//wysyalnie podczas odbierania powoduje problemy - wysyłamy po 100ms
+            }
 
         }
     } else if(receivedData[0] == XModem::EOT){ //plik zakonczony
