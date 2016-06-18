@@ -14,7 +14,8 @@
 XModemSender::XModemSender(QString portName, QString fileName) :
                                                     fileName(fileName),
                                                     packetNr(0),
-                                                    bytesRead(0) {
+                                                    bytesRead(0),
+                                                    initC(false){
     qDebug() << Q_FUNC_INFO;
 
     //stworzenie s konfigurowanie portu szeregowego
@@ -84,14 +85,19 @@ void XModemSender::send(){
 //    }
 //    soh, 1, 256-1, data[128], suma, 0
 //    return suma;
-    quint16 crc = qChecksum(fileData,bytesRead);//sume algebraiczna 1 bajtowa a nie dopelnienie
+    if(initC){
+        //wyslanie naglowka z danymi i crc
+        quint16 crc = qChecksum(fileData,bytesRead);//sume algebraiczna 1 bajtowa a nie dopelnienie
 
-    //crc jest 16bitowe, wiec wysylamy na 2 bajtach
-    toSend.append((char)crc & 0xFFUL);
-    toSend.append((char)((crc & 0xFF00UL) >> 8) );
-    //qDebug() << "crc: " << crc << " parts: " << (unsigned char)toSend[toSend.length()-2] << " " << (unsigned char)toSend[toSend.length()-1];
+        //crc jest 16bitowe, wiec wysylamy na 2 bajtach
+        toSend.append((char)crc & 0xFFUL);
+        toSend.append((char)((crc & 0xFF00UL) >> 8) );
+        //qDebug() << "crc: " << crc << " parts: " << (unsigned char)toSend[toSend.length()-2] << " " << (unsigned char)toSend[toSend.length()-1];
+    } else {
+        //wyslanie naglowka z danymi i algSum
 
-    //wyslanie naglowka z danymi i crc
+    }
+
     port->write(toSend);
     port->flush();
     port->waitForBytesWritten(1000);

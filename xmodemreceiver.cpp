@@ -110,28 +110,33 @@ void XModemReceiver::readData(){
         unsigned char packetNr = receivedData[1];
         unsigned char complement = receivedData[2];
 
-        //odczytaj crc
-        //qDebug() << "crc parts: " << (unsigned char)receivedData[receivedData.length()-2]  << " " << (unsigned char)receivedData[receivedData.length()-1];
-        quint16 receivedCrc = (unsigned char)receivedData[receivedData.length()-2] + (int)((unsigned char)receivedData[receivedData.length()-1] << 8);
-
         qDebug() << "packetNr: " << packetNr  << "complement: " << complement;
 
-        //odczytaj fileData (opuszczamy 3 pierwsze bajty nagłowka i ostatnie dwa z crc)
-        QByteArray fileData = receivedData.mid(3,receivedData.length()-5);
+        if(initC){
+            //odczytaj crc
+            //qDebug() << "crc parts: " << (unsigned char)receivedData[receivedData.length()-2]  << " " << (unsigned char)receivedData[receivedData.length()-1];
+            quint16 receivedCrc = (unsigned char)receivedData[receivedData.length()-2] + (int)((unsigned char)receivedData[receivedData.length()-1] << 8);
 
-        //liczymy crc odebranych danych
-        quint16 crc = qChecksum(fileData.data(),fileData.length());
+            //odczytaj fileData (opuszczamy 3 pierwsze bajty nagłowka i ostatnie dwa z crc)
+            QByteArray fileData = receivedData.mid(3,receivedData.length()-5);
 
-        qDebug() << "receivedCrc: " << receivedCrc;
-        qDebug() << "    calcCrc: " << crc;
+            //liczymy crc odebranych danych
+            quint16 crc = qChecksum(fileData.data(),fileData.length());
 
-        if( complement == 255 - packetNr && crc == receivedCrc ){//jest ok
-            qDebug() << "complement/packetNr and crc - OK";
-            file->write(fileData);
-            QTimer::singleShot(100,this, SLOT(sendACK()));//wysyalnie podczas odbierania powoduje problemy - wysyłamy po 100ms
-        } else { //bład transmisji
-            qDebug() << "transfer error - request resend alt part";
-            QTimer::singleShot(100,this, SLOT(sendNAK()));//wysyalnie podczas odbierania powoduje problemy - wysyłamy po 100ms
+            qDebug() << "receivedCrc: " << receivedCrc;
+            qDebug() << "    calcCrc: " << crc;
+
+            if( complement == 255 - packetNr && crc == receivedCrc ){//jest ok
+                qDebug() << "complement/packetNr and crc - OK";
+                file->write(fileData);
+                QTimer::singleShot(100,this, SLOT(sendACK()));//wysyalnie podczas odbierania powoduje problemy - wysyłamy po 100ms
+            } else { //bład transmisji
+                qDebug() << "transfer error - request resend alt part";
+                QTimer::singleShot(100,this, SLOT(sendNAK()));//wysyalnie podczas odbierania powoduje problemy - wysyłamy po 100ms
+            }
+        } else {
+            //odczyt algSum
+
         }
     } else if(receivedData[0] == XModem::EOT){ //plik zakonczony
         qDebug() << "EOT";
