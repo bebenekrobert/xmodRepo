@@ -162,7 +162,8 @@ void XModemReceiver::readData(){
 
         }
     } else if(receivedData[0] == XModem::EOT){ //plik zakonczony
-        qDebug() << "EOT";
+        qDebug() << "EOT last ACK sending";
+        QTimer::singleShot(100,this, SLOT(sendACK()));//wysyalnie ostaniego ACK
         emit finished();
     }
     port->clear();

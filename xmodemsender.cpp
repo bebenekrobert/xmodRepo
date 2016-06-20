@@ -15,7 +15,8 @@ XModemSender::XModemSender(QString portName, QString fileName) :
                                                     fileName(fileName),
                                                     packetNr(0),
                                                     bytesRead(0),
-                                                    initC(false){
+                                                    initC(false),
+                                                    eofSent(false){
     qDebug() << Q_FUNC_INFO;
 
     //stworzenie s konfigurowanie portu szeregowego
@@ -43,7 +44,7 @@ XModemSender::XModemSender(QString portName, QString fileName) :
     port->open(QIODevice::ReadWrite);//tryb r/w
 
     //czekamy na NAK od reveivera
-    qDebug() << "waiting for NAK...";
+    qDebug() << "waiting for NAK or C ...";
 }
 
 /**
@@ -136,8 +137,13 @@ void XModemSender::readData(){
             qDebug() << "sending next file part";
             packetNr++;
             QTimer::singleShot(100, this, SLOT(send()));//wysyalnie podczas odbierania powoduje problemy - wysyłamy po 100ms
-        } else { //koniec pliku
+        } else if(!eofSent){ //koniec pliku, EOT not sent
+            eofSent = true;
+            qDebug() << "EOF sent";
             QTimer::singleShot(100, this, SLOT(sendEOT()));//wysyalnie podczas odbierania powoduje problemy - wysyłamy po 100ms
+        } else { //receiver sent last ACK
+            qDebug() << "EOF sent, last ACK arrived";
+            emit finished();
         }
     } else if(data[0] == XModem::CAN) { //cancel
         emit finished();

@@ -29,6 +29,7 @@ private:
     unsigned char packetNr;
     int bytesRead;
     bool initC;
+    bool eofSent;
 };
 
 #endif // XMODEMSENDER_H
