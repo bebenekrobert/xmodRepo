@@ -96,11 +96,12 @@ void XModemSender::send(){
         //qDebug() << "crc: " << crc << " parts: " << (unsigned char)toSend[toSend.length()-2] << " " << (unsigned char)toSend[toSend.length()-1];
     } else {
         //wyslanie naglowka z danymi i algSum
-        quint8 algSum = 0;
+        quint16 algSum = 0;
         for(int i = 0; i < bytesRead; i++){
-            algSum += (quint8)fileData[i];
+            algSum += (quint16)fileData[i];
         }
-        toSend.append(algSum);
+        toSend.append((char)algSum & 0xFFUL);
+        toSend.append((char)((algSum & 0xFF00UL) >> 8) );
         qDebug() << Q_FUNC_INFO << "algSum is: " << algSum;
     }
 

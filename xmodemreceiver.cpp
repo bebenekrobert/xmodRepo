@@ -136,16 +136,16 @@ void XModemReceiver::readData(){
             }
         } else {
             //odczyt algSum
-            quint8 receivedAlgSum = (unsigned char)receivedData[receivedData.length()-1];
+            quint16 receivedAlgSum = (unsigned char)receivedData[receivedData.length()-2] + (int)((unsigned char)receivedData[receivedData.length()-1] << 8);
             qDebug() << Q_FUNC_INFO << "receivedAlgSum is: " << receivedAlgSum;
 
             //odczyt file data
-            QByteArray fileData = receivedData.mid(3,receivedData.length()-4);
+            QByteArray fileData = receivedData.mid(3,receivedData.length()-5);
 
             //liczymy algSum odebranych danych
-            quint8 algSum = 0;
-            for(int i = 0; i < (receivedData.length()-4); i++){
-                algSum += (quint8)fileData[i];
+            quint16 algSum = 0;
+            for(int i = 0; i < (receivedData.length()-5); i++){
+                algSum += (quint16)fileData[i];
             }
 
             qDebug() << "receivedAlgSum: " << receivedAlgSum;
